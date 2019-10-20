@@ -1,52 +1,125 @@
-# escuelajs-reto-04
-Reto 4 Septiembre 21: Curso de Profesional de JavaScript
+# Escuelajs-reto-05
+Reto 5 Septiembre 28: Curso de Fundamentos de JavaScript
 
-# Ejecución
+# 100tifi.co
+
+![100tifico](https://raw.githubusercontent.com/platzi/escuelajs-reto-05/master/screenshot.png?token=ACQQY5SNIXZ7QAVA5XIHPSC5TADSY)
+
+Somos un directorio de personajes de la serie animada "Rick and Morty". Estamos por lanzar nuestra implementación y necesitamos resolver los problemas que presenta nuestra aplicación.
+
+https://100tifi.co tiene un Bug, al llegar al final del listado de personajes se realiza una petición a la API ya que implementamos un "intersection observer" pero vuelve a obtener los mismos personajes y necesitamos cargar la lista completa de 468 personajes conforme hagamos scroll.
+
+### Debug
+
+Visita el sitio web: https://100tifi.co
+
+### Instalación
+
+```
+npm install
+```
+
+### Ejecución
 
 ```
 npm run start
 ```
 
-### Primer problema
-Crea una función llamada "randomTime" que te permita retornar un valor en mili segundos de forma aleatoria en el rango de 1000ms hasta 8000ms.
+### Documentación
 
-* Completa la función "orders" manejando el reject.
-* Utiliza la función de randomTime
+
+- Variable llamada $app donde haremos render de nuestra app.
+- Elemento del DOM que sera Observado.
+- Constante 'API': Utilizamos la API de Rick and Morty.
+
+```javascript
+const $app = document.getElementById('app');
+const $observe = document.getElementById('observe');
+const API = 'https://rickandmortyapi.com/api/character/';
+```
+
+Función llamada 'getData' que se encarga de hacer Fetch a una API y construye un elemento nuevo en el DOM.
+
+```javascript
+const getData = api => {
+  fetch(api)
+    .then(response => response.json())
+    .then(response => {
+      const characters = response.results;
+      let output = characters.map(character => {
+        return `
+      <article class="Card">
+        <img src="${character.image}" />
+        <h2>${character.name}<span>${character.species}</span></h2>
+      </article>
+    `
+      }).join('');
+      let newItem = document.createElement('section');
+      newItem.classList.add('Items');
+      newItem.innerHTML = output;
+      $app.appendChild(newItem);
+    })
+    .catch(error => console.log(error));
+}
+```
+
+Función encargada de hacer Fetch de los personajes.
+
+```javascript
+const loadData = () => {
+  getData(API);
+}
+```
+
+Intersection Observer
+```javascript
+
+const intersectionObserver = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    loadData();
+  }
+}, {
+  rootMargin: '0px 0px 100% 0px',
+});
+
+intersectionObserver.observe($observe);
+```
+
+
+## RETO
+
+### Primer problema
+
+1. Guarda en localStorage la URL de la siguiente petición de personajes obtenida en la primera llamada a la API.
+2. Utiliza el nombre para la llave: 'next_fetch'.
+3. Comprueba que se ha guardado el valor 'next_fetch' en localStorage.
 
 ### Segundo Problema
 
-Crea una función llamada "waiter2" que se encargue de recoger dos pedidos, uno de la "Mesa 1" y otro de la "Mesa 3".
-
-Pedido "Mesa 1": Combo Hotdog
-Pedido "Mesa 3": Combo Pizza
-
-* Utiliza Promesas Encadenadas
-* Utiliza la función de randomTime
+1. Obten los datos almacenados en localStorage de la llave: 'next_fetch'.
+2. Valida que exista un valor en 'next_fetch' o regresa el primer llamado de la API.
+3. Actualiza la función loadData() a Async/Await.
 
 ### Tercer Problema
 
-Crea una función llamada "waiter3" que se encargue de recoger el pedido de la "Mesa 2" el pedido solo puede ser entregado hasta que todos los plantillos estén listos para ser servidos.
+Cuando cerramos la pestaña o recargamos la pagina se debe de volver a mostrar los primeros 20 personajes.
 
-* Pedido "Mesa 2": Combo Hotdog, Combo Pizza, Combo Hotdog
-
-* Utiliza Async/Await
-* Manejo de errores
-* Utiliza la función de randomTime
+1. Mostrar los primeros 20 personajes al recargar
+2. Eliminar el localStorage.
 
 ### Cuarto Problema (Opcional)
 
-Crea una función llamada "fetchOrders" que realice un llamado a la API de ordenes y una función llamada "waiter4" que se encargue de solicitar 4 pedidos que deban de ser entregados hasta que estén todos listos.
+La API utilizada "RickAndMortyApi.com" tiene 25 paginas de 20 personajes cada una, cuando la ultima petición sea ejecutada y el valor 'next' no sea entregado debes de mostrar un mensaje "Ya no hay personajes", a su vez debes de destruir el intersection observer.
 
-* API: https://us-central1-escuelajs-api.cloudfunctions.net/orders
-* Utiliza Async/Await
-* Manejo de errores
+1. Implementar mensaje: "Ya no hay personajes...".
+2. Deja de observar el elemento "observe".
 
-# Enviar solución de reto
+### Enviar solución de reto
 
 Debes de crear un "Fork" de este proyecto, revolver los problemas y crear un Pull Request hacia este repositorio.
 
-# Contribuir
-Si alguien quiere agregar o mejorar algo, lo invito a colaborar directamente en este repositorio: [escuelajs-reto-04](https://github.com/platzi/escuelajs-reto-04/)
+### Contribuir
+Si alguien quiere agregar o mejorar algo, lo invito a colaborar directamente en este repositorio: [escuelajs-reto-05](https://github.com/platzi/escuelajs-reto-05/)
 
-# Licencia
-escuelajs-reto-04 se lanza bajo la licencia [MIT](https://opensource.org/licenses/MIT).
+### Licencia
+escuelajs-reto-05 se lanza bajo la licencia [MIT](https://opensource.org/licenses/MIT).

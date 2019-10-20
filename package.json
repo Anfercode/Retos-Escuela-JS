@@ -1,27 +1,23 @@
 {
-  "name": "escuelajs-reto-04",
+  "name": "escuelajs-reto-05",
   "version": "1.0.0",
-  "description": "Reto 4 Septiembre 21: Curso de Fundamentos de JavaScript",
+  "description": "Reto 5 Septiembre 28: Curso de Fundamentos de JavaScript",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "live-server --open=public --entry-file=index.html"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/platzi/escuelajs-reto-04.git"
+    "url": "git+https://github.com/platzi/escuelajs-reto-05.git"
   },
-  "keywords": [
-    "javascript",
-    "escuelajs",
-    "node"
-  ],
+  "keywords": [],
   "author": "Oscar Barajas <oscar@platzi.com>",
-  "license": "MIT",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/platzi/escuelajs-reto-04/issues"
+    "url": "https://github.com/platzi/escuelajs-reto-05/issues"
   },
-  "homepage": "https://github.com/platzi/escuelajs-reto-04#readme",
-  "dependencies": {
-    "xmlhttprequest": "^1.8.0"
+  "homepage": "https://github.com/platzi/escuelajs-reto-05#readme",
+  "devDependencies": {
+    "live-server": "^1.2.1"
   }
 }

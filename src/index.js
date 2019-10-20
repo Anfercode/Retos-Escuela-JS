@@ -1,131 +1,65 @@
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+const $app = document.getElementById("app");
+const $observe = document.getElementById("observe");
+const API = "https://rickandmortyapi.com/api/character/";
+var no_characters = false;
 
-var API = "https://us-central1-escuelajs-api.cloudfunctions.net/orders";
-var xhttp = new XMLHttpRequest();
-
-const fetchOrders = url_api => {
-  return new Promise((resolve, reject) => {
-    xhttp.onreadystatechange = function(event) {
-      if (xhttp.readyState === 4 && xhttp.status == 200)
-        resolve(xhttp.responseText);
-      else return reject(url_api);
-    };
-    xhttp.open("GET", url_api, false);
-    xhttp.send();
-  });
-};
-
-function randomTime() {
-  MIN = 1;
-  MAX = 8;
-  return Math.floor(Math.random() * (MAX - MIN + 1) + MIN) * 1000;
+if (localStorage.getItem("next_fetch")) {
+  localStorage.clear();
 }
 
-function randomTable() {
-  MIN = 0;
-  MAX = 3;
-  return Math.floor(Math.random() * (MAX - MIN + 1) + MIN);
-}
+const getData = api => {
+  fetch(api)
+    .then(response => response.json())
+    .then(response => {
+      const characters = response.results;
 
-onError = error => {
-  console.log(error);
-};
-
-const orders = (time, product, table) => {
-  console.log(`### Orden: ${product} para ${table}`);
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(
-        `=== Pedido servido: ${product}, tiempo de preparación ${time}ms para la ${table}`
-      );
-    }, time);
-  });
-};
-
-const menu = {
-  hamburger: "Combo Hamburguesa",
-  hotdog: "Combo Hot Dogs",
-  pizza: "Combo Pizza"
-};
-
-const table = ["Mesa 1", "Mesa 2", "Mesa 3", "Mesa 4", "Mesa 5"];
-
-const waiter = () => {
-  orders(randomTime(), menu.hamburger, table[3])
-    .then(res => console.log(res))
-    .catch(err => console.error(err));
-};
-
-const waiter2 = () => {
-  orders(randomTime(), menu.hotdog, table[0])
-    .then(res => {
-      console.log(res);
-      return orders(randomTime(), menu.pizza, table[2]);
+      let output = characters
+        .map(character => {
+          return `
+      <article class="Card">
+        <img src="${character.image}" />
+        <h2>${character.name}<span>${character.species}</span></h2>
+      </article>
+    `;
+        })
+        .join("");
+      let newItem = document.createElement("section");
+      newItem.classList.add("Items");
+      newItem.innerHTML = output;
+      $app.appendChild(newItem);
+      localStorage.setItem("next_fetch", `${response.info.next}`);
     })
-    .then(res => console.log(res))
-    .catch(err => console.error(err));
+    .catch(error => console.log(error));
 };
 
-async function waiter3() {
-  const random = randomTime();
-
-  try {
-    await Promise.all([
-      orders(random, menu.hotdog, table[1]).then(res => console.log(res)),
-      orders(random, menu.pizza, table[1]).then(res => console.log(res)),
-      orders(random, menu.hamburger, table[1]).then(res => console.log(res))
-    ]);
-  } catch (error) {
-    onError(error);
+async function loadData() {
+  if (!localStorage.getItem("next_fetch")) {
+    no_characters ? disableObserver() : getData(API);
+    no_characters = true;
+  } else {
+    await getData(localStorage.getItem("next_fetch"));
   }
 }
 
-async function waiter4() {
-  const time = randomTime();
-  try {
-    const promises = await Promise.all([
-      fetchOrders(API).then(
-        (callOrder = menu => {
-          return (parcedData = JSON.parse(menu).data);
-        })
-      ),
-      fetchOrders(API).then(
-        (callOrder = menu => {
-          return (parcedData = JSON.parse(menu).data);
-        })
-      ),
-      fetchOrders(API).then(
-        (callOrder = menu => {
-          return (parcedData = JSON.parse(menu).data);
-        })
-      ),
-      fetchOrders(API).then(
-        (callOrder = menu => {
-          return (parcedData = JSON.parse(menu).data);
-        })
-      )
-    ]);
-
-    await Promise.all([
-      orders(time, promises[0], table[randomTable()]).then(res =>
-        console.log(res)
-      ),
-      orders(time, promises[1], table[randomTable()]).then(res =>
-        console.log(res)
-      ),
-      orders(time, promises[2], table[randomTable()]).then(res =>
-        console.log(res)
-      ),
-      orders(time, promises[3], table[randomTable()]).then(res =>
-        console.log(res)
-      )
-    ]);
-  } catch (error) {
-    onError(error);
-  }
+function disableObserver() {
+  intersectionObserver.unobserve($observe);
+  let app = `<h1>No hay mas personajes!!!</h1>`;
+  let newItem = document.createElement("section");
+  newItem.classList.add("app");
+  newItem.innerHTML = app;
+  $app.appendChild(newItem);
 }
 
-waiter();
-waiter2();
-waiter3();
-waiter4();
+const intersectionObserver = new IntersectionObserver(
+  entries => {
+    if (entries[0].isIntersecting) {
+      loadData();
+      console.log("========>" + localStorage.getItem("next_fetch"));
+    }
+  },
+  {
+    rootMargin: "0px 0px 100% 0px"
+  }
+);
+
+intersectionObserver.observe($observe);
