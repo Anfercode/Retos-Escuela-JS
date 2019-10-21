@@ -1,125 +1,110 @@
-# Escuelajs-reto-05
-Reto 5 Septiembre 28: Curso de Fundamentos de JavaScript
+# Escuelajs-reto-06
+Reto 6 Octubre 5: Curso Práctico de React JS
 
-# 100tifi.co
+## Platzi Maps
 
-![100tifico](https://raw.githubusercontent.com/platzi/escuelajs-reto-05/master/screenshot.png?token=ACQQY5SNIXZ7QAVA5XIHPSC5TADSY)
+Tenemos un proyecto web, donde debemos trabajar con la API de Google de mapas, tenemos que mostrar en un Mapa las ubicaciones de las oficinas de Platzi.
 
-Somos un directorio de personajes de la serie animada "Rick and Morty". Estamos por lanzar nuestra implementación y necesitamos resolver los problemas que presenta nuestra aplicación.
-
-https://100tifi.co tiene un Bug, al llegar al final del listado de personajes se realiza una petición a la API ya que implementamos un "intersection observer" pero vuelve a obtener los mismos personajes y necesitamos cargar la lista completa de 468 personajes conforme hagamos scroll.
-
-### Debug
-
-Visita el sitio web: https://100tifi.co
+![Google-maps](https://raw.githubusercontent.com/platzi/escuelajs-reto-06/master/screenshot.png?token=ACQQY5TB2DOOKO5CD7LURB25UFNGK)
 
 ### Instalación
-
 ```
 npm install
 ```
 
 ### Ejecución
-
 ```
 npm run start
 ```
 
+### Server
+```
+npm run server
+```
+
+### Compilar
+```
+npm run build
+```
+
 ### Documentación
-
-
-- Variable llamada $app donde haremos render de nuestra app.
-- Elemento del DOM que sera Observado.
-- Constante 'API': Utilizamos la API de Rick and Morty.
+Importar React y el paquete [google-maps-react](https://www.npmjs.com/package/google-maps-react)
 
 ```javascript
-const $app = document.getElementById('app');
-const $observe = document.getElementById('observe');
-const API = 'https://rickandmortyapi.com/api/character/';
+import React from 'react';
+import { Map, GoogleApiWrapper, Marker } from 'google-maps-react';
 ```
-
-Función llamada 'getData' que se encarga de hacer Fetch a una API y construye un elemento nuevo en el DOM.
+Creamos un componente llamado MapContainer donde vamos a crear la lógica para crear un nuevo mapa.
 
 ```javascript
-const getData = api => {
-  fetch(api)
-    .then(response => response.json())
-    .then(response => {
-      const characters = response.results;
-      let output = characters.map(character => {
-        return `
-      <article class="Card">
-        <img src="${character.image}" />
-        <h2>${character.name}<span>${character.species}</span></h2>
-      </article>
-    `
-      }).join('');
-      let newItem = document.createElement('section');
-      newItem.classList.add('Items');
-      newItem.innerHTML = output;
-      $app.appendChild(newItem);
-    })
-    .catch(error => console.log(error));
+const MapContainer = ({ google }) => {
+  return (
+    <Map
+      google={google}
+      zoom={5}
+      initialCenter={{ lat: 19.5943885, lng: -97.9526044 }}
+    >
+      <Marker
+        position={{ lat: 19.4267261, lng: -99.1718706 }}
+      />
+    </Map>
+  );
 }
 ```
 
-Función encargada de hacer Fetch de los personajes.
+Utilizamos GoogleApiWrapper que es un HOC (Higher-Order component) acepta un objeto que contiene el apiKey.
 
 ```javascript
-const loadData = () => {
-  getData(API);
-}
+export default GoogleApiWrapper({
+  apiKey: 'AIzaSyCmjvkXB_DMnBUNwxQztLMStyQmA_szbNw'
+})(MapContainer);
 ```
-
-Intersection Observer
-```javascript
-
-const intersectionObserver = new IntersectionObserver(entries => {
-  if (entries[0].isIntersecting) {
-    loadData();
-  }
-}, {
-  rootMargin: '0px 0px 100% 0px',
-});
-
-intersectionObserver.observe($observe);
-```
-
 
 ## RETO
 
 ### Primer problema
+Necesitamos que nuestra aplicación tenga una sección de contacto con un mapa de Google Maps, donde puedas tener un botón que oculta o muestra el botón.
 
-1. Guarda en localStorage la URL de la siguiente petición de personajes obtenida en la primera llamada a la API.
-2. Utiliza el nombre para la llave: 'next_fetch'.
-3. Comprueba que se ha guardado el valor 'next_fetch' en localStorage.
+1) Convertir el componente 'MapContainer.jsx' a Clase
+2) Añadir 'show' en 'false' en el estado de la aplicación
+3) Agregar un botón que muestre y oculte el mapa.
 
 ### Segundo Problema
 
-1. Obten los datos almacenados en localStorage de la llave: 'next_fetch'.
-2. Valida que exista un valor en 'next_fetch' o regresa el primer llamado de la API.
-3. Actualiza la función loadData() a Async/Await.
+Tenemos por defecto en nuestra Mapa la Ubicación de Platzi HQ México, debemos de añadir al mapa la Ubicación de Platzi HQ Bogotá.
+
+1) Leer la documentación de '[google-maps-react](https://www.npmjs.com/package/google-maps-react)' para implementar multiples Markers
+2) Agrega Platzi HQ Bogotá: LAT: 4.6560716 LON: -74.0595918
 
 ### Tercer Problema
 
-Cuando cerramos la pestaña o recargamos la pagina se debe de volver a mostrar los primeros 20 personajes.
+Ahora utiliza la API propuesta
 
-1. Mostrar los primeros 20 personajes al recargar
-2. Eliminar el localStorage.
+Para ejecutar la Fake API debes de correr el siguiente comando:
+
+```bash
+npm run server
+```
+
+1) Inicia y analiza el funcionamiento de la FAKE API de 'locations'
+2) Haz un llamado a la API desde el proyecto por medio de fetch
+3) Por medio de 'props' pasa al componente 'MapContainer.jsx' el resultado de la consulta a la FAKE API.
+4) Itera por cada una de las ubicaciones que tiene Platzi y muéstralas en el Mapa.
 
 ### Cuarto Problema (Opcional)
 
-La API utilizada "RickAndMortyApi.com" tiene 25 paginas de 20 personajes cada una, cuando la ultima petición sea ejecutada y el valor 'next' no sea entregado debes de mostrar un mensaje "Ya no hay personajes", a su vez debes de destruir el intersection observer.
+Ahora que tenemos nuestra aplicación Funcionando, utiliza la documentación del paquete instalado para aprender e implementar un 'InfoWindow' por cada ubicación de Platzi
 
-1. Implementar mensaje: "Ya no hay personajes...".
-2. Deja de observar el elemento "observe".
+1) Leer la documentación de '[google-maps-react](https://www.npmjs.com/package/google-maps-react)' para implementar 'InfoWindow'
+2) Implementa un 'InfoWindow' por cada ubicación debes de utilizar la información de la FAKE API.
+3) Muestra el nombre de la oficina de Platzi al dar clic en el Maker.
+
 
 ### Enviar solución de reto
-
 Debes de crear un "Fork" de este proyecto, revolver los problemas y crear un Pull Request hacia este repositorio.
 
 ### Contribuir
-Si alguien quiere agregar o mejorar algo, lo invito a colaborar directamente en este repositorio: [escuelajs-reto-05](https://github.com/platzi/escuelajs-reto-05/)
+Si alguien quiere agregar o mejorar algo, lo invito a colaborar directamente en este repositorio: [escuelajs-reto-06](https://github.com/platzi/escuelajs-reto-06/)
 
 ### Licencia
-escuelajs-reto-05 se lanza bajo la licencia [MIT](https://opensource.org/licenses/MIT).
+escuelajs-reto-06 se lanza bajo la licencia [MIT](https://opensource.org/licenses/MIT).
